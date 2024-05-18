@@ -15,20 +15,20 @@ import os
 import platform
 import time
 
-mode = desktop
-# mode = engine
+mode = 'desktop'
+# mode = 'engine'
 
-if mode = engine :
+if mode == 'engine' :
     # https://help.agi.com/stkdevkit/index.htm#python/pythonGettingStarted.htm
     from agi.stk12.stkengine import STKEngine
     stk = STKEngine.StartApplication ( noGraphics = True )
     print ( stk.Version )
     stkRoot = stk.NewObjectRoot ()
-else if mode = desktop:
+elif mode == 'desktop' :
     # https://help.agi.com/stkdevkit/index.htm#python/pythonProgrammingGuide.htm
     from agi.stk12.stkdesktop import STKDesktop
-    stk = STKDesktop.StartApplication ( visible = True , userControl = True )
-    # stk = STKDesktop.AttachToApplication ()
+    # stk = STKDesktop.StartApplication ( visible = True , userControl = True )
+    stk = STKDesktop.AttachToApplication ()
     stkRoot = stk.Root
 
 stkRoot.UnitPreferences.SetCurrentUnit ( "DateFormat" , "UTCG" )
@@ -40,11 +40,12 @@ scenario.SetTimePeriod ( "1 Jan 2010 12:00:00", "1 Jan 2011 12:00:00" )
 
 satellite = scenario.Children.New ( AgESTKObjectType.eSatellite , "POLMEO" )
 satellite.SetPropagatorType ( AgEVePropagatorType.ePropagatorJ4Perturbation )
+keplerian = satellite.Propagator.InitialState.Representation.ConvertTo ( AgEOrbitStateType.eOrbitStateClassical )
 
 propagator = satellite.Propagator
 
 orbitState = propagator.InitialState.Representation
-orbitStateClassical = orbitState.ConvertTo ( AgEOrbitStateType.eOrbitStateClassical )
+orbitStateClassical = orbitState.InitialState.Representation.ConvertTo ( AgEOrbitStateType.eOrbitStateClassical )
 # orbitStateClassical.SizeShapeType = AgEClassicalSizeShape.eSizeShapeSemimajorAxis
 orbitStateClassical.SizeShapeType = AgEClassicalSizeShape.eSizeShapeAltitude
 orbitStateClassical.LocationType = AgEClassicalLocation.eLocationTrueAnomaly
