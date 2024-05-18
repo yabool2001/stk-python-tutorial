@@ -9,15 +9,63 @@
 # Successfully installed agi.stk12-12.8.0
 # PS C:\Users\mzeml>
 
-# https://help.agi.com/stkdevkit/index.htm#python/pythonGettingStarted.htm
-from agi.stk12.stkengine import STKEngine
-
-# https://help.agi.com/stkdevkit/index.htm#python/pythonProgrammingGuide.htm
-from agi.stk12.stkdesktop import STKDesktop
 from agi.stk12.stkobjects import *
 
-# stk = STKEngine.StartApplication ( noGraphics = True )
-# stk = STKDesktop.StartApplication ( visible = True ) #using optional visible argument
-stk = STKDesktop.AttachToApplication ()
+import os
+import platform
+import time
+
+mode = desktop
+# mode = engine
+
+if mode = engine :
+    # https://help.agi.com/stkdevkit/index.htm#python/pythonGettingStarted.htm
+    from agi.stk12.stkengine import STKEngine
+    stk = STKEngine.StartApplication ( noGraphics = True )
+    print ( stk.Version )
+    stkRoot = stk.NewObjectRoot ()
+else if mode = desktop:
+    # https://help.agi.com/stkdevkit/index.htm#python/pythonProgrammingGuide.htm
+    from agi.stk12.stkdesktop import STKDesktop
+    stk = STKDesktop.StartApplication ( visible = True , userControl = True )
+    # stk = STKDesktop.AttachToApplication ()
+    stkRoot = stk.Root
+
+stkRoot.UnitPreferences.SetCurrentUnit ( "DateFormat" , "UTCG" )
+
+stkRoot.NewScenario ( "Mono_BLOS_16_python001" )
+scenario = stkRoot.CurrentScenario
+scenario.SetTimePeriod ( "1 Jan 2010 12:00:00", "1 Jan 2011 12:00:00" )
+
+
+satellite = scenario.Children.New ( AgESTKObjectType.eSatellite , "POLMEO" )
+satellite.SetPropagatorType ( AgEVePropagatorType.ePropagatorJ4Perturbation )
+
+propagator = satellite.Propagator
+
+orbitState = propagator.InitialState.Representation
+orbitStateClassical = orbitState.ConvertTo ( AgEOrbitStateType.eOrbitStateClassical )
+# orbitStateClassical.SizeShapeType = AgEClassicalSizeShape.eSizeShapeSemimajorAxis
+orbitStateClassical.SizeShapeType = AgEClassicalSizeShape.eSizeShapeAltitude
+orbitStateClassical.LocationType = AgEClassicalLocation.eLocationTrueAnomaly
+orientation = orbitStateClassical.Orientation
+orientation.AscNodeType = AgEOrientationAscNode.eAscNodeRAAN
+
+sizeShape = orbitStateClassical.SizeShape
+sizeShape.PerigeeAltitude   = 12000
+sizeShape.ApogeeAltitude    = 12000
+
+orientation.Inclination = 90
+orientation.ArgOfPerigee = 0
+
+raan = orientation.AscNode
+raan.Value = 0
+
+trueAnomaly = orbitStateClassical.Location
+trueAnomaly.Value = 0
+
+orbitState.Assign ( orbitStateClassical )
+
+propagator.Propagate()
 
 stk.ShutDown ()
