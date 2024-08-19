@@ -1,7 +1,7 @@
 # The STK Python API is packaged as a wheel file that can be installed using pip.
 # The wheel file is included with the STK install in the bin/AgPythonAPI directory.
 # python -m pip install "<STK installation directory>/bin/AgPythonAPI/agi.stk12-12.8.0-py3-none-any.whl"
-
+# or python -m pip install "agi.stk12-12.8.0-py3-none-any.whl"
 
 # PS C:\Users\mzeml> python -m pip install "C:/Program Files/AGI/STK 12/bin/AgPythonAPI/agi.stk12-12.8.0-py3-none-any.whl"
 # Processing c:\program files\agi\stk 12\bin\agpythonapi\agi.stk12-12.8.0-py3-none-any.whl
